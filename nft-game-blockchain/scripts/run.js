@@ -22,7 +22,7 @@ const main = async() => {
     await txn.wait;
     txn = await gameContract.attackBoss();
     await txn.wait;
-    
+    console.log("done!");
 };
 
 const runMain = async () => {
