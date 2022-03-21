@@ -3,23 +3,28 @@ import './SelectCharacter.css';
 import { ethers } from 'ethers';
 import { CONTRACT_ADDRESS, transformCharacterData } from '../../constants';
 import myEpicGame from '../../utils/MyEpicGame.json';
+import LoadingIndicator from '../LoadingIndicator';
 
 
 const SelectCharacter= ({setCharacterNFT})=> {
     const [characters, setCharacters] = useState([]);
     const [gameContract, setGameContract] = useState(null);
+    const [mintingCharacter, setMintingCharacter] = useState(false);
 
     const mintCharacterNFTAction = async (characterId) => {
         try {
           if (gameContract) {
+            setMintingCharacter(true);
             console.log('Minting character in progress...');
             const mintTxn = await gameContract.mintCharacterNFT(characterId);
             await mintTxn.wait();
             console.log('mintTxn:', mintTxn);
+            setMintingCharacter(false);
           }
           alert(`Your NFT is all done -- see it here: https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${characterId.toNumber}`)
         } catch (error) {
           console.warn('MintCharacterAction Error:', error);
+          setMintingCharacter(false);
         }
       };
 
@@ -106,6 +111,16 @@ const SelectCharacter= ({setCharacterNFT})=> {
             characters.length>0 &&(
                 <div className="character-grid">{renderCharacters()}</div>
             )
+        }
+        {
+           mintingCharacter && (
+             <div className="loading">
+               <div className="indicator">
+                 <LoadingIndicator />
+                 <p>Minting your NFT!</p>
+               </div>
+             </div>
+           )
         }
     </div>
   )

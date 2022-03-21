@@ -4,18 +4,22 @@ import SelectCharacter from './Components/SelectCharacter';
 import { CONTRACT_ADDRESS , transformCharacterData} from './constants';
 import myEpicGame from './utils/MyEpicGame.json';
 import Arena from './Components/Arena';
+import LoadingIndicator from './Components/LoadingIndicator';
 import { ethers } from 'ethers';
+
+
 const App = () => {
 
   const [currentAccount, setCurrentAccount] = useState(null);
   const [characterNFT, setCharacterNFT] = useState(null);
-
+  const [isLoading, setIsLoading] = useState(false);
 
   const checkIfWalletIsConnected = async() =>{
     try{
       const {ethereum} = window;
       if(!ethereum){
         console.log('Make sure you have metamask and are connected !');
+        setIsLoading(false);
         return;
       }else{
         console.log('we have the ethereum object! ', ethereum);
@@ -31,6 +35,7 @@ const App = () => {
     }catch(error){
       console.log(error);
     }
+    setIsLoading(false);
   };
 
   const checkNetwork = async()=>{
@@ -45,6 +50,9 @@ const App = () => {
 
 
   const renderContent = () => {
+    if(isLoading){
+      return <LoadingIndicator />;
+    }
     if(!currentAccount){
       return(
         <div className="connect-wallet-container">
@@ -89,6 +97,7 @@ const App = () => {
   }
 
   useEffect(()=>{
+    setIsLoading(true);
     checkIfWalletIsConnected();
     checkNetwork();
   },[]);
@@ -112,6 +121,8 @@ const App = () => {
       } else {
         console.log('No character NFT found');
       }
+
+      setIsLoading(false);
     };
 
     if (currentAccount) {
